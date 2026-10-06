@@ -5,11 +5,11 @@
     "name": "MobileMonitorApp",
     "type": "android",
     "description": "PCアプリ群の進捗・関係・機能をスマホで見える化するアプリ",
-    "version": "1.1.13"
+    "version": "1.1.14"
   },
   "status": {
     "phase": "implementation",
-    "summary": "1.1.13 APKダウンロード完了後にAndroid標準インストール画面を自動起動"
+    "summary": "1.1.14 MobileMonitorApp自身を含むAPKを通知・ブラウザなしでアプリ内取得し、Android標準インストーラを自動起動"
   },
   "features": [
     {
