@@ -2,15 +2,23 @@
   "schemaVersion": 1,
   "applications": [
     {
-      "projectId": "cli",
-      "name": "CLI",
-      "repository": "Code-Appathy/CLI",
+      "projectId": "mobile-monitor-app",
+      "name": "MobileMonitorApp",
+      "repository": "Code-Appathy/MobileMonitorApp",
       "platform": "android",
-      "distribution": {
-        "provider": "github_release",
-        "channel": "stable"
-      },
-      "status": "release_setup_pending"
+      "distribution": {"provider": "github_release", "channel": "stable"},
+      "status": "released"
+    },
+    {
+      "projectId": "schedule-memory-app",
+      "name": "スケジュールメモ",
+      "repository": "Code-Appathy/ScheduleMemoryApp",
+      "platform": "android",
+      "packageId": "com.codeappathy.schedulememory",
+      "distribution": {"provider": "github_release", "channel": "stable"},
+      "latestRelease": "v1.0.0",
+      "assetName": "ScheduleMemoryApp-v1.0.0.apk",
+      "status": "released"
     }
   ]
 }
