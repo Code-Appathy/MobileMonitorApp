@@ -164,7 +164,7 @@ class MainActivity: ComponentActivity(){
             Column(Modifier.padding(16.dp)){
                 Text("🏪 わたしのアプリ",fontSize=24.sp,fontWeight=FontWeight.Bold)
                 Text("GitHub Releaseから最新版を確認できるよ！")
-                Text("MobileMonitorApp 1.2.0",fontSize=12.sp,color=Color.Gray)
+                Text("MobileMonitorApp 1.1.5",fontSize=12.sp,color=Color.Gray)
                 Button(onClick={refresh++},enabled=!loading){ Text(if(loading) "確認中…" else "🔄 最新情報を確認") }
             }
         }
