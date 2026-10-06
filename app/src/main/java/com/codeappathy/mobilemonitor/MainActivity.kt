@@ -184,11 +184,14 @@ class MainActivity: ComponentActivity(){
     var error by remember { mutableStateOf<String?>(null) }
     var releases by remember { mutableStateOf<Map<String, PublishedRelease?>>(emptyMap()) }
     var downloadIds by remember { mutableStateOf<Map<String, Long>>(emptyMap()) }
-    var completedDownloads by remember { mutableStateOf<Set<String>>(emptySet()) }
+    var installStarted by remember { mutableStateOf<Set<String>>(emptySet()) }
     LaunchedEffect(downloadIds) {
         while (downloadIds.isNotEmpty()) {
-            val done = downloadIds.filter { isDownloadComplete(context, it.value) }.keys
-            if (done.isNotEmpty()) completedDownloads = completedDownloads + done
+            val done = downloadIds.filter { isDownloadComplete(context, it.value) && !installStarted.contains(it.key) }
+            done.forEach { (repository, id) ->
+                installStarted = installStarted + repository
+                installDownloadedApk(context, id)
+            }
             delay(1000)
         }
     }
@@ -236,24 +239,20 @@ class MainActivity: ComponentActivity(){
                     if(release != null){
                         Text(if(release.apkUrl != null) "📦 APK公開済み" else "📭 APKはありません")
                         if(release.notes.isNotBlank()) Text(release.notes.take(240),fontSize=12.sp,maxLines=6)
-                        if (release.apkUrl != null && completedDownloads.contains(app.repository)) {
-                            Button(onClick={ downloadIds[app.repository]?.let { installDownloadedApk(context, it) } }) { Text("インストール") }
-                        } else {
-                            Button(onClick={
+                        Button(onClick={
                                 val url = release.apkUrl ?: release.url
                                 if(release.apkUrl != null && url.startsWith("https://github.com/")) {
                                     val fileName = if (app.name == "スケジュールメモ") "ScheduleMemoryApp-v1.0.0.apk" else "MobileMonitorApp-${release.version.removePrefix("v")}.apk"
                                     val id = downloadApk(context, url, fileName)
                                     downloadIds = downloadIds + (app.repository to id)
                                 } else if(url.startsWith("https://github.com/")) context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                            }, enabled = !downloadIds.containsKey(app.repository)) {
-                                Text(if(downloadIds.containsKey(app.repository)) "ダウンロード中…" else if(release.apkUrl != null) "APKをダウンロード" else "Releaseを見る")
-                            }
+                        }, enabled = !downloadIds.containsKey(app.repository)) {
+                            Text(if(downloadIds.containsKey(app.repository)) "ダウンロード中…" else if(release.apkUrl != null) "APKをダウンロード" else "Releaseを見る")
                         }
                     }
                 }
             }
         }
-        Text("APKはアプリ内でダウンロード状態を確認し、完了後に「インストール」からAndroid標準の確認画面へ進めます。",fontSize=12.sp,color=Color.Gray)
+        Text("APKのダウンロード完了後、Android標準のインストール確認画面を自動で開きます。",fontSize=12.sp,color=Color.Gray)
     }
 }
