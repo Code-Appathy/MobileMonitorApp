@@ -9,7 +9,7 @@ on:
       version:
         description: 'Release version, e.g. 1.1.2'
         required: true
-        default: '1.1.2'
+        default: '1.1.3'
 
 permissions:
   contents: write
@@ -59,6 +59,24 @@ jobs:
           MM_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           MM_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: gradle :app:assembleRelease
+
+      - name: Install Android SDK build tools for verification
+        uses: android-actions/setup-android@v3
+
+      - name: Verify signed release APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs "$APK"
+          BADGING="$("$BUILD_TOOLS/aapt" dump badging "$APK")"
+          echo "$BADGING" | head -1
+          echo "$BADGING" | grep -F "package: name='com.codeappathy.mobilemonitor'"
+          echo "$BADGING" | grep -F "versionCode='10103'"
+          echo "$BADGING" | grep -F "versionName='1.1.3'"
+          echo "Signed APK signature and package metadata verified."
 
       - name: Prepare release files and checksum
         shell: bash
