@@ -38,7 +38,21 @@ private val storeApps = listOf(
     StoreApp("スケジュールメモ","📅","予定をカレンダーと一覧で管理する","1.0.0","Code-Appathy/ScheduleMemoryApp","配布APK v1.0.0","https://github.com/Code-Appathy/MobileMonitorApp/releases/download/v1.1.7/ScheduleMemoryApp-v1.0.0.apk")
 )
 
-data class PublishedRelease(val version: String, val url: String, val apkUrl: String?, val notes: String)\n\nprivate fun downloadApk(context: Context, url: String, fileName: String) {\n    val request = DownloadManager.Request(Uri.parse(url))\n        .setTitle(fileName)\n        .setDescription("APKをダウンロードしています")\n        .setMimeType("application/vnd.android.package-archive")\n        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)\n        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)\n        .setAllowedOverMetered(true)\n        .setAllowedOverRoaming(true)\n    val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager\n    manager.enqueue(request)\n    Toast.makeText(context, "ダウンロードを開始しました。完了通知からAPKを開いてください。", Toast.LENGTH_LONG).show()\n}
+data class PublishedRelease(val version: String, val url: String, val apkUrl: String?, val notes: String)
+
+private fun downloadApk(context: Context, url: String, fileName: String) {
+    val request = DownloadManager.Request(Uri.parse(url))
+        .setTitle(fileName)
+        .setDescription("APKをダウンロードしています")
+        .setMimeType("application/vnd.android.package-archive")
+        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+        .setAllowedOverMetered(true)
+        .setAllowedOverRoaming(true)
+    val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    manager.enqueue(request)
+    Toast.makeText(context, "ダウンロードを開始しました。完了通知からAPKを開いてください。", Toast.LENGTH_LONG).show()
+}
 
 private fun fetchRelease(repository: String): PublishedRelease? {
     val connection = URL("https://api.github.com/repos/$repository/releases/latest").openConnection() as HttpURLConnection
@@ -128,7 +142,8 @@ class MainActivity: ComponentActivity(){
 @Composable fun MapScreen(open:(Project)->Unit){
     Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp),horizontalAlignment=Alignment.CenterHorizontally){
         Text("みんなは、こんなふうにつながるよ",fontWeight=FontWeight.Bold,fontSize=20.sp);Spacer(Modifier.height(14.dp))
-        FunNode("🏠 AppHubApp","みんなをまとめる"){open(projects[0])}; Text("│\n├──── 情報・管理 ────┤",color=Color.Gray)
+        FunNode("🏠 AppHubApp","みんなをまとめる"){open(projects[0])}; Text("│
+├──── 情報・管理 ────┤",color=Color.Gray)
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceEvenly){ FunNode("🗺️ FolderMap","場所を整理"){open(projects[1])}; FunNode("🎨 PictureCode","絵をつくる"){open(projects[2])} }
         Spacer(Modifier.height(12.dp));Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceEvenly){ FunNode("🛡️ SecuriPC","安全を確認"){open(projects[3])}; FunNode("📊 MacroNext","Excelを助ける"){open(projects[4])} }
         Text("↓ 進捗や機能を知らせる ↓",Modifier.padding(16.dp),color=Color.Gray);FunNode("📱 MobileMonitor","みんなの様子を見る"){}
@@ -139,7 +154,8 @@ class MainActivity: ComponentActivity(){
 
 @Composable fun EncyclopediaScreen(open:(Project)->Unit){ Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){Text("アプリ図鑑",fontSize=22.sp,fontWeight=FontWeight.Bold);Text("むずかしい言葉を使わずに、何をするアプリなのか見てみよう。",color=Color.Gray);projects.forEach{p->Card(Modifier.fillMaxWidth().clickable{open(p)},colors=CardDefaults.cardColors(containerColor=Color(0xFFE3F2FD))){Row(Modifier.padding(16.dp),verticalAlignment=Alignment.CenterVertically){Text(p.emoji,fontSize=38.sp);Spacer(Modifier.width(12.dp));Column{Text(p.name,fontWeight=FontWeight.Bold);Text(p.purpose);Text("やさしく見る →",color=Color(0xFF6750A4),fontSize=12.sp)}}}} } }
 
-@Composable fun ProjectDetail(p:Project,back:()->Unit){ Column(Modifier.verticalScroll(rememberScrollState()).padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){ Text("← もどる",Modifier.clickable{back()},color=Color(0xFF6750A4));Text("${p.emoji} ${p.name}",fontSize=28.sp,fontWeight=FontWeight.Bold);Card(colors=CardDefaults.cardColors(containerColor=Color(0xFFFFF3C4))){Column(Modifier.padding(16.dp)){Text("これはなに？",fontWeight=FontWeight.Bold);Text("${p.name}は、${p.purpose}ためのアプリです。パソコンでしている仕事を、もっと分かりやすく便利にする仲間です。")}};Text("できること",fontWeight=FontWeight.Bold);p.features.forEach{Text("✅ $it")};Text("これから",fontWeight=FontWeight.Bold);p.next.forEach{Text("🌱 $it")};Text("開発の進みぐあい ${(p.progress*100).toInt()}%",fontWeight=FontWeight.Bold);LinearProgressIndicator(progress={p.progress},Modifier.fillMaxWidth());Text("技術情報",fontWeight=FontWeight.Bold);Text("GitHub: Code-Appathy/${p.name}\n共有規格: .apphub/project.json + GUIDE.md",fontSize=13.sp,color=Color.Gray) } }
+@Composable fun ProjectDetail(p:Project,back:()->Unit){ Column(Modifier.verticalScroll(rememberScrollState()).padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){ Text("← もどる",Modifier.clickable{back()},color=Color(0xFF6750A4));Text("${p.emoji} ${p.name}",fontSize=28.sp,fontWeight=FontWeight.Bold);Card(colors=CardDefaults.cardColors(containerColor=Color(0xFFFFF3C4))){Column(Modifier.padding(16.dp)){Text("これはなに？",fontWeight=FontWeight.Bold);Text("${p.name}は、${p.purpose}ためのアプリです。パソコンでしている仕事を、もっと分かりやすく便利にする仲間です。")}};Text("できること",fontWeight=FontWeight.Bold);p.features.forEach{Text("✅ $it")};Text("これから",fontWeight=FontWeight.Bold);p.next.forEach{Text("🌱 $it")};Text("開発の進みぐあい ${(p.progress*100).toInt()}%",fontWeight=FontWeight.Bold);LinearProgressIndicator(progress={p.progress},Modifier.fillMaxWidth());Text("技術情報",fontWeight=FontWeight.Bold);Text("GitHub: Code-Appathy/${p.name}
+共有規格: .apphub/project.json + GUIDE.md",fontSize=13.sp,color=Color.Gray) } }
 
 
 @Composable fun StoreScreen(){
@@ -194,7 +210,10 @@ class MainActivity: ComponentActivity(){
                         if(release.notes.isNotBlank()) Text(release.notes.take(240),fontSize=12.sp,maxLines=6)
                         Button(onClick={
                             val url = release.apkUrl ?: release.url
-                            if(release.apkUrl != null && url.startsWith("https://github.com/")) {\n                                val fileName = if (app.name == "スケジュールメモ") "ScheduleMemoryApp-v1.0.0.apk" else "MobileMonitorApp-\${release.version.removePrefix("v")}.apk"\n                                downloadApk(context, url, fileName)\n                            } else if(url.startsWith("https://github.com/")) context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                            if(release.apkUrl != null && url.startsWith("https://github.com/")) {
+                                val fileName = if (app.name == "スケジュールメモ") "ScheduleMemoryApp-v1.0.0.apk" else "MobileMonitorApp-${release.version.removePrefix("v")}.apk"
+                                downloadApk(context, url, fileName)
+                            } else if(url.startsWith("https://github.com/")) context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                         }) { Text(if(release.apkUrl != null) "APKをダウンロード" else "Releaseを見る") }
                     }
                 }
