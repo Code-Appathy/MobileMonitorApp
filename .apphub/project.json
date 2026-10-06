@@ -9,7 +9,7 @@
   },
   "status": {
     "phase": "implementation",
-    "summary": "1.1.13 通知に依存せず、アプリ内でAPKダウンロード完了を検知してインストールへ進める"
+    "summary": "1.1.13 APKダウンロード完了後にAndroid標準インストール画面を自動起動"
   },
   "features": [
     {
