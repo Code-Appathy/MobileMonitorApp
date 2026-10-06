@@ -12,8 +12,8 @@ android {
         applicationId = "com.codeappathy.mobilemonitor"
         minSdk = 26
         targetSdk = 35
-        versionCode = 10105
-        versionName = "1.1.5"
+        versionCode = 10106
+        versionName = "1.1.6"
     }
 
     compileOptions {
