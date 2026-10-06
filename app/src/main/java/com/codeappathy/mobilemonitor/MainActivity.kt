@@ -1,6 +1,14 @@
 package com.codeappathy.mobilemonitor
 
 import android.os.Bundle
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -22,8 +30,43 @@ data class Project(val name:String,val emoji:String,val purpose:String,val progr
 data class StoreApp(val name:String,val emoji:String,val purpose:String,val version:String,val repository:String,val releaseStatus:String)
 
 private val storeApps = listOf(
-    StoreApp("CLI","⌨️","スマホから開発を助ける最初のストアアプリ","準備中","Code-Appathy/CLI","GitHub Release連携を準備中")
+    StoreApp("CLI","⌨️","スマホから開発を助けるアプリ","未確認","Code-Appathy/CLI","公開Releaseを確認します"),
+    StoreApp("MobileMonitorApp","📱","開発状況と自作アプリを見守る","未確認","Code-Appathy/MobileMonitorApp","公開Releaseを確認します")
 )
+
+data class PublishedRelease(val version: String, val url: String, val apkUrl: String?, val notes: String)
+
+private fun fetchRelease(repository: String): PublishedRelease? {
+    val connection = URL("https://api.github.com/repos/$repository/releases/latest").openConnection() as HttpURLConnection
+    connection.connectTimeout = 10000
+    connection.readTimeout = 10000
+    connection.setRequestProperty("Accept", "application/vnd.github+json")
+    connection.setRequestProperty("User-Agent", "MobileMonitorApp")
+    try {
+        if (connection.responseCode == 404) return null
+        if (connection.responseCode != 200) throw IllegalStateException("GitHub HTTP ${connection.responseCode}")
+        val json = JSONObject(connection.inputStream.bufferedReader().use { it.readText() })
+        val assets = json.optJSONArray("assets")
+        var apk: String? = null
+        if (assets != null) {
+            for (i in 0 until assets.length()) {
+                val asset = assets.getJSONObject(i)
+                if (asset.optString("name").endsWith(".apk", ignoreCase = true)) {
+                    apk = asset.optString("browser_download_url").takeIf { it.startsWith("https://github.com/") }
+                    break
+                }
+            }
+        }
+        return PublishedRelease(
+            json.optString("tag_name", "不明"),
+            json.optString("html_url", "https://github.com/$repository/releases"),
+            apk,
+            json.optString("body", "")
+        )
+    } finally {
+        connection.disconnect()
+    }
+}
 
 private val projects = listOf(
     Project("AppHubApp","🏠","アプリをまとめる",.82f,"主要機能を実装中",listOf("ユーザー管理","アプリ管理","アクセス権"),listOf("連携情報を共通化")),
@@ -96,35 +139,63 @@ class MainActivity: ComponentActivity(){
 
 
 @Composable fun StoreScreen(){
+    val context = LocalContext.current
+    var refresh by remember { mutableIntStateOf(0) }
+    var loading by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
+    var releases by remember { mutableStateOf<Map<String, PublishedRelease?>>(emptyMap()) }
+    LaunchedEffect(refresh) {
+        loading = true
+        error = null
+        try {
+            releases = withContext(Dispatchers.IO) {
+                storeApps.associate { app ->
+                    app.repository to runCatching { fetchRelease(app.repository) }.getOrElse { throw it }
+                }
+            }
+        } catch (e: Exception) {
+            error = "GitHubの取得に失敗しました。通信状態を確認してください。"
+        } finally {
+            loading = false
+        }
+    }
     Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement=Arrangement.spacedBy(12.dp)){
         Card(colors=CardDefaults.cardColors(containerColor=Color(0xFFFFE0F0))){
             Column(Modifier.padding(16.dp)){
                 Text("🏪 わたしのアプリ",fontSize=24.sp,fontWeight=FontWeight.Bold)
-                Text("自分で作ったAndroidアプリが、ここに集まるよ！")
-                Text("MobileMonitorApp 1.1.1",fontSize=12.sp,color=Color.Gray,modifier=Modifier.padding(top=6.dp))
+                Text("GitHub Releaseから最新版を確認できるよ！")
+                Text("MobileMonitorApp 1.2.0",fontSize=12.sp,color=Color.Gray)
+                Button(onClick={refresh++},enabled=!loading){ Text(if(loading) "確認中…" else "🔄 最新情報を確認") }
             }
         }
+        if(error != null) Text(error!!,color=Color(0xFFB00020))
         storeApps.forEach { app ->
+            val release = releases[app.repository]
             Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=Color(0xFFE8F5E9))){
-                Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+                Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
                     Row(verticalAlignment=Alignment.CenterVertically){
-                        Text(app.emoji,fontSize=38.sp); Spacer(Modifier.width(12.dp))
-                        Column(Modifier.weight(1f)){ Text(app.name,fontSize=20.sp,fontWeight=FontWeight.Bold); Text(app.purpose) }
+                        Text(app.emoji,fontSize=36.sp);Spacer(Modifier.width(12.dp))
+                        Column { Text(app.name,fontSize=20.sp,fontWeight=FontWeight.Bold);Text(app.purpose) }
                     }
                     HorizontalDivider()
-                    Text("🏷️ バージョン: ${app.version}")
-                    Text("☁️ ${app.releaseStatus}")
-                    Text("GitHub: ${app.repository}",fontSize=12.sp,color=Color.Gray)
-                    Text("次の段階でGitHub Releaseから最新版とAPKを自動取得します。",fontSize=12.sp,color=Color(0xFF6750A4))
+                    Text("GitHub: ${app.repository}",fontSize=12.sp)
+                    Text(when {
+                        loading && !releases.containsKey(app.repository) -> "☁️ 最新版を確認中"
+                        release == null && error == null -> "🌱 公開Releaseはまだありません"
+                        release == null -> "⚠️ 最新版を確認できません"
+                        else -> "🏷️ 最新Release: ${release.version}"
+                    })
+                    if(release != null){
+                        Text(if(release.apkUrl != null) "📦 APK公開済み" else "📭 APKはありません")
+                        if(release.notes.isNotBlank()) Text(release.notes.take(240),fontSize=12.sp,maxLines=6)
+                        Button(onClick={
+                            val url = release.apkUrl ?: release.url
+                            if(url.startsWith("https://github.com/")) context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                        }) { Text(if(release.apkUrl != null) "APKをダウンロード" else "Releaseを見る") }
+                    }
                 }
             }
         }
-        Card(colors=CardDefaults.cardColors(containerColor=Color(0xFFFFF3C4))){
-            Column(Modifier.padding(16.dp)){
-                Text("🚦 公開のルール",fontWeight=FontWeight.Bold)
-                Text("push → build成功 → Release公開 → APK取得 → インストール → 実機確認")
-                Text("それぞれを別の状態として管理します。",fontSize=12.sp,color=Color.Gray)
-            }
-        }
+        Text("公開Releaseのみ取得します。インストール済みかどうかは判定していません。APKのインストールはAndroidの確認画面から行ってください。",fontSize=12.sp,color=Color.Gray)
     }
 }
