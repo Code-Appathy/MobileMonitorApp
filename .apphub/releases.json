@@ -1,8 +1,13 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "1.1.12",
-  "versionCode": 10112,
+  "currentVersion": "1.1.13",
+  "versionCode": 10113,
   "history": [
+    {
+      "version": "1.1.13",
+      "changeType": "patch",
+      "summary": "通知に依存しないAPK導線へ変更。アプリ内でダウンロード完了を検知し、インストールボタンからAndroid標準インストールへ進む。"
+    },
     {
       "version": "1.1.12",
       "changeType": "patch",
