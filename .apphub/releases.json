@@ -1,8 +1,13 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "1.1.13",
-  "versionCode": 10113,
+  "currentVersion": "1.1.14",
+  "versionCode": 10114,
   "history": [
+    {
+      "version": "1.1.14",
+      "type": "patch",
+      "summary": "MobileMonitorApp自身を含むAPK更新をアプリ内HTTP取得へ変更。通知・ブラウザ・Downloadsを使わず、取得完了後にAndroid標準インストーラを自動起動。"
+    },
     {
       "version": "1.1.13",
       "changeType": "patch",
