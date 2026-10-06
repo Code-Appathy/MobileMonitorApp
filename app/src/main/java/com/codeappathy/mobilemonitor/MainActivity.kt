@@ -19,6 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 data class Project(val name:String,val emoji:String,val purpose:String,val progress:Float,val status:String,val features:List<String>,val next:List<String>)
+data class StoreApp(val name:String,val emoji:String,val purpose:String,val version:String,val repository:String,val releaseStatus:String)
+
+private val storeApps = listOf(
+    StoreApp("CLI","⌨️","スマホから開発を助ける最初のストアアプリ","準備中","Code-Appathy/CLI","GitHub Release連携を準備中")
+)
 
 private val projects = listOf(
     Project("AppHubApp","🏠","アプリをまとめる",.82f,"主要機能を実装中",listOf("ユーザー管理","アプリ管理","アクセス権"),listOf("連携情報を共通化")),
@@ -47,7 +52,8 @@ class MainActivity: ComponentActivity(){
                 when(tab){
                     0 -> ProgressScreen { selected=it }
                     1 -> MapScreen { selected=it }
-                    else -> EncyclopediaScreen { selected=it }
+                    2 -> EncyclopediaScreen { selected=it }
+                    else -> StoreScreen()
                 }
             }
         }
@@ -55,7 +61,7 @@ class MainActivity: ComponentActivity(){
 }
 
 @Composable fun TabRow(tab:Int,onTab:(Int)->Unit){
-    val labels=listOf("📊 進みぐあい","🗺️ みんなの地図","📚 アプリ図鑑")
+    val labels=listOf("📊 進みぐあい","🗺️ みんなの地図","📚 アプリ図鑑","🏪 マイアプリ")
     androidx.compose.material3.TabRow(selectedTabIndex=tab){ labels.forEachIndexed { i,s -> Tab(selected=tab==i,onClick={onTab(i)},text={Text(s,fontSize=11.sp)}) } }
 }
 
@@ -64,7 +70,7 @@ class MainActivity: ComponentActivity(){
     Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement=Arrangement.spacedBy(12.dp)){
         Card(colors=CardDefaults.cardColors(containerColor=Color(0xFFFFF3C4))){ Column(Modifier.padding(16.dp)){ Text("みんなの進みぐあい",fontWeight=FontWeight.Bold); Text("${(avg*100).toInt()}%",fontSize=34.sp,fontWeight=FontWeight.Bold); LinearProgressIndicator(progress={avg},Modifier.fillMaxWidth()) } }
         projects.forEach { p -> ProjectCard(p){open(p)} }
-        Text("v0.1 はサンプルデータ表示です。次段階で各GitHubリポジトリの .apphub/project.json と同期します。",fontSize=12.sp,color=Color.Gray)
+        Text("1.1.1ではストア基盤を追加。開発モニターのデータはまだサンプルで、次段階でGitHub/.apphub同期へ進みます。",fontSize=12.sp,color=Color.Gray)
     }
 }
 
@@ -87,3 +93,38 @@ class MainActivity: ComponentActivity(){
 @Composable fun EncyclopediaScreen(open:(Project)->Unit){ Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){Text("アプリ図鑑",fontSize=22.sp,fontWeight=FontWeight.Bold);Text("むずかしい言葉を使わずに、何をするアプリなのか見てみよう。",color=Color.Gray);projects.forEach{p->Card(Modifier.fillMaxWidth().clickable{open(p)},colors=CardDefaults.cardColors(containerColor=Color(0xFFE3F2FD))){Row(Modifier.padding(16.dp),verticalAlignment=Alignment.CenterVertically){Text(p.emoji,fontSize=38.sp);Spacer(Modifier.width(12.dp));Column{Text(p.name,fontWeight=FontWeight.Bold);Text(p.purpose);Text("やさしく見る →",color=Color(0xFF6750A4),fontSize=12.sp)}}}} } }
 
 @Composable fun ProjectDetail(p:Project,back:()->Unit){ Column(Modifier.verticalScroll(rememberScrollState()).padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){ Text("← もどる",Modifier.clickable{back()},color=Color(0xFF6750A4));Text("${p.emoji} ${p.name}",fontSize=28.sp,fontWeight=FontWeight.Bold);Card(colors=CardDefaults.cardColors(containerColor=Color(0xFFFFF3C4))){Column(Modifier.padding(16.dp)){Text("これはなに？",fontWeight=FontWeight.Bold);Text("${p.name}は、${p.purpose}ためのアプリです。パソコンでしている仕事を、もっと分かりやすく便利にする仲間です。")}};Text("できること",fontWeight=FontWeight.Bold);p.features.forEach{Text("✅ $it")};Text("これから",fontWeight=FontWeight.Bold);p.next.forEach{Text("🌱 $it")};Text("開発の進みぐあい ${(p.progress*100).toInt()}%",fontWeight=FontWeight.Bold);LinearProgressIndicator(progress={p.progress},Modifier.fillMaxWidth());Text("技術情報",fontWeight=FontWeight.Bold);Text("GitHub: Code-Appathy/${p.name}\n共有規格: .apphub/project.json + GUIDE.md",fontSize=13.sp,color=Color.Gray) } }
+
+
+@Composable fun StoreScreen(){
+    Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement=Arrangement.spacedBy(12.dp)){
+        Card(colors=CardDefaults.cardColors(containerColor=Color(0xFFFFE0F0))){
+            Column(Modifier.padding(16.dp)){
+                Text("🏪 わたしのアプリ",fontSize=24.sp,fontWeight=FontWeight.Bold)
+                Text("自分で作ったAndroidアプリが、ここに集まるよ！")
+                Text("MobileMonitorApp 1.1.1",fontSize=12.sp,color=Color.Gray,modifier=Modifier.padding(top=6.dp))
+            }
+        }
+        storeApps.forEach { app ->
+            Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=Color(0xFFE8F5E9))){
+                Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+                    Row(verticalAlignment=Alignment.CenterVertically){
+                        Text(app.emoji,fontSize=38.sp); Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)){ Text(app.name,fontSize=20.sp,fontWeight=FontWeight.Bold); Text(app.purpose) }
+                    }
+                    HorizontalDivider()
+                    Text("🏷️ バージョン: ${app.version}")
+                    Text("☁️ ${app.releaseStatus}")
+                    Text("GitHub: ${app.repository}",fontSize=12.sp,color=Color.Gray)
+                    Text("次の段階でGitHub Releaseから最新版とAPKを自動取得します。",fontSize=12.sp,color=Color(0xFF6750A4))
+                }
+            }
+        }
+        Card(colors=CardDefaults.cardColors(containerColor=Color(0xFFFFF3C4))){
+            Column(Modifier.padding(16.dp)){
+                Text("🚦 公開のルール",fontWeight=FontWeight.Bold)
+                Text("push → build成功 → Release公開 → APK取得 → インストール → 実機確認")
+                Text("それぞれを別の状態として管理します。",fontSize=12.sp,color=Color.Gray)
+            }
+        }
+    }
+}

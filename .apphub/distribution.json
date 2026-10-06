@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "provider": "github_release",
+  "channel": "stable",
+  "assetType": "apk",
+  "states": [
+    "pushed",
+    "build_succeeded",
+    "release_published",
+    "apk_available",
+    "installed",
+    "device_verified"
+  ],
+  "rule": "各状態を独立して記録し、推測で進めない"
+}

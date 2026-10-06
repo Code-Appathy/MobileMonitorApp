@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "applications": [
+    {
+      "projectId": "cli",
+      "name": "CLI",
+      "repository": "Code-Appathy/CLI",
+      "platform": "android",
+      "distribution": {
+        "provider": "github_release",
+        "channel": "stable"
+      },
+      "status": "release_setup_pending"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "policy": "generated_from_app_semantics",
+  "autoGenerate": true,
+  "inputs": [
+    "appName",
+    "purpose",
+    "mainFeatures",
+    "roleInEcosystem"
+  ],
+  "style": "pop-friendly, simple, recognizable at small size",
+  "android": "adaptive-icon",
+  "rule": "新規アプリでは用途とコンセプトからアイコンイメージを生成しAndroid用アイコンへ組み込む"
+}

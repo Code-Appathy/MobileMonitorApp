@@ -1,11 +1,42 @@
 {
   "schemaVersion": 1,
-  "project": {"id":"mobile-monitor-app","name":"MobileMonitorApp","type":"android","description":"PCアプリ群の進捗・関係・機能をスマホで見える化するアプリ"},
-  "status": {"phase":"implementation","summary":"v0.1 初期UIを実装"},
+  "project": {
+    "id": "mobile-monitor-app",
+    "name": "MobileMonitorApp",
+    "type": "android",
+    "description": "PCアプリ群の進捗・関係・機能をスマホで見える化するアプリ",
+    "version": "1.1.1"
+  },
+  "status": {
+    "phase": "implementation",
+    "summary": "1.1.1 マイアプリストア基盤を実装"
+  },
   "features": [
-    {"id":"progress","name":"進捗一覧","status":"completed"},
-    {"id":"map","name":"全体関係マップ","status":"completed"},
-    {"id":"encyclopedia","name":"子供向けアプリ図鑑","status":"completed"},
-    {"id":"github-sync","name":"GitHub project.json同期","status":"planned"}
-  ]
+    {
+      "id": "progress",
+      "name": "進捗一覧",
+      "status": "completed"
+    },
+    {
+      "id": "map",
+      "name": "全体関係マップ",
+      "status": "completed"
+    },
+    {
+      "id": "encyclopedia",
+      "name": "子供向けアプリ図鑑",
+      "status": "completed"
+    },
+    {
+      "id": "github-sync",
+      "name": "GitHub project.json同期",
+      "status": "planned"
+    }
+  ],
+  "versionPolicy": {
+    "format": "MAJOR.MINOR.PATCH",
+    "patch": "通常更新・修正",
+    "minor": "大きな機能追加・削除",
+    "major": "アプリ全体の刷新"
+  }
 }

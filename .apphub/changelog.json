@@ -1,1 +1,26 @@
-{"schemaVersion":1,"changes":[{"version":"0.2.0","type":"architecture","summary":"AppHub v1 metadata split and pop encyclopedia direction adopted"},{"version":"0.2.0","type":"build","summary":"Java and Kotlin JVM targets unified on 17"}]}
+{
+  "schemaVersion": 1,
+  "changes": [
+    {
+      "version": "0.2.0",
+      "type": "architecture",
+      "summary": "AppHub v1 metadata split and pop encyclopedia direction adopted"
+    },
+    {
+      "version": "0.2.0",
+      "type": "build",
+      "summary": "Java and Kotlin JVM targets unified on 17"
+    },
+    {
+      "version": "1.1.1",
+      "date": "2026-10-06",
+      "changes": [
+        "正式SemVer管理を開始",
+        "マイアプリストア画面を追加",
+        "CLIを第1号ストア候補としてRegistry登録",
+        "GitHub Release配布オントロジーを追加",
+        "自動生成アイコン規約を追加"
+      ]
+    }
+  ]
+}
