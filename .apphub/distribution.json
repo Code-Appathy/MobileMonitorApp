@@ -11,5 +11,9 @@
     "installed",
     "device_verified"
   ],
-  "rule": "各状態を独立して記録し、推測で進めない"
+  "rule": "各状態を独立して記録し、推測で進めない",
+  "releaseArtifact": "MobileMonitorApp-${version}.apk",
+  "checksumArtifact": "SHA256SUMS.txt",
+  "signing": "fixed-keystore-via-github-actions-secrets",
+  "releaseTrigger": "tag vMAJOR.MINOR.PATCH"
 }

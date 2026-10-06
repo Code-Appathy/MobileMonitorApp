@@ -27,3 +27,13 @@ Keep these states distinct: file created, pushed, build succeeded, installed, de
 - Android apps intended for My App Store use GitHub Releases as the distribution source.
 - Keep pushed/build_succeeded/release_published/apk_available/installed/device_verified distinct.
 - New apps should have an automatically generated semantic icon based on app name, purpose, features and ecosystem role.
+
+## Android release signing
+- Never commit a keystore, signing password, token, or private key.
+- Release APKs are signed only in GitHub Actions using repository Secrets.
+- Required Secrets: ANDROID_KEYSTORE, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_PASSWORD, ANDROID_KEY_ALIAS.
+- `ANDROID_KEYSTORE` is the base64 text of the JKS file, never the raw binary.
+- A GitHub Release is created only from a version tag `vMAJOR.MINOR.PATCH`.
+- The tag version must exactly match Android `versionName`.
+- Release assets must include the signed APK and `SHA256SUMS.txt`.
+- Debug APKs are development artifacts and must not be published as store releases.

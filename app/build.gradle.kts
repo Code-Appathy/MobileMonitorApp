@@ -12,8 +12,8 @@ android {
         applicationId = "com.codeappathy.mobilemonitor"
         minSdk = 26
         targetSdk = 35
-        versionCode = 10101
-        versionName = "1.1.1"
+        versionCode = 10102
+        versionName = "1.1.2"
     }
 
     compileOptions {
@@ -23,6 +23,25 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    signingConfigs {
+        create("release") {
+            val storeFilePath = System.getenv("MM_STORE_FILE")
+            if (!storeFilePath.isNullOrBlank()) {
+                storeFile = file(storeFilePath)
+            }
+            storePassword = System.getenv("MM_STORE_PASSWORD")
+            keyAlias = System.getenv("MM_KEY_ALIAS")
+            keyPassword = System.getenv("MM_KEY_PASSWORD")
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = false
+        }
     }
 
     buildFeatures { compose = true }
