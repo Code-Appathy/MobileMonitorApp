@@ -1,8 +1,13 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "1.1.7",
-  "versionCode": 10107,
+  "currentVersion": "1.1.12",
+  "versionCode": 10112,
   "history": [
+    {
+      "version": "1.1.12",
+      "changeType": "patch",
+      "summary": "バージョン情報をBuildConfig基準に統一。画面・project.json・releases.jsonの現在版表記の不整合を修正。"
+    },
     {
       "version": "1.1.7",
       "changeType": "patch",
