@@ -30,7 +30,6 @@ data class Project(val name:String,val emoji:String,val purpose:String,val progr
 data class StoreApp(val name:String,val emoji:String,val purpose:String,val version:String,val repository:String,val releaseStatus:String)
 
 private val storeApps = listOf(
-    StoreApp("CLI","⌨️","スマホから開発を助けるアプリ","未確認","Code-Appathy/CLI","公開Releaseを確認します"),
     StoreApp("MobileMonitorApp","📱","開発状況と自作アプリを見守る","未確認","Code-Appathy/MobileMonitorApp","公開Releaseを確認します")
 )
 
@@ -164,7 +163,7 @@ class MainActivity: ComponentActivity(){
             Column(Modifier.padding(16.dp)){
                 Text("🏪 わたしのアプリ",fontSize=24.sp,fontWeight=FontWeight.Bold)
                 Text("GitHub Releaseから最新版を確認できるよ！")
-                Text("MobileMonitorApp 1.1.5",fontSize=12.sp,color=Color.Gray)
+                Text("MobileMonitorApp 1.1.6",fontSize=12.sp,color=Color.Gray)
                 Button(onClick={refresh++},enabled=!loading){ Text(if(loading) "確認中…" else "🔄 最新情報を確認") }
             }
         }
