@@ -9,6 +9,7 @@ import android.os.Environment
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -40,18 +41,38 @@ private val storeApps = listOf(
 
 data class PublishedRelease(val version: String, val url: String, val apkUrl: String?, val notes: String)
 
-private fun downloadApk(context: Context, url: String, fileName: String) {
+private fun downloadApk(context: Context, url: String, fileName: String): Long {
     val request = DownloadManager.Request(Uri.parse(url))
         .setTitle(fileName)
         .setDescription("APKをダウンロードしています")
         .setMimeType("application/vnd.android.package-archive")
-        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
         .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
         .setAllowedOverMetered(true)
         .setAllowedOverRoaming(true)
     val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-    manager.enqueue(request)
-    Toast.makeText(context, "ダウンロードを開始しました。完了通知からAPKを開いてください。", Toast.LENGTH_LONG).show()
+    val id = manager.enqueue(request)
+    Toast.makeText(context, "ダウンロードを開始しました。", Toast.LENGTH_SHORT).show()
+    return id
+}
+
+private fun isDownloadComplete(context: Context, id: Long): Boolean {
+    val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    manager.query(DownloadManager.Query().setFilterById(id)).use { cursor ->
+        if (!cursor.moveToFirst()) return false
+        val status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
+        return status == DownloadManager.STATUS_SUCCESSFUL
+    }
+}
+
+private fun installDownloadedApk(context: Context, id: Long) {
+    val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    val uri = manager.getUriForDownloadedFile(id) ?: return
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(uri, "application/vnd.android.package-archive")
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    context.startActivity(intent)
 }
 
 private fun fetchRelease(repository: String): PublishedRelease? {
@@ -162,6 +183,15 @@ class MainActivity: ComponentActivity(){
     var loading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     var releases by remember { mutableStateOf<Map<String, PublishedRelease?>>(emptyMap()) }
+    var downloadIds by remember { mutableStateOf<Map<String, Long>>(emptyMap()) }
+    var completedDownloads by remember { mutableStateOf<Set<String>>(emptySet()) }
+    LaunchedEffect(downloadIds) {
+        while (downloadIds.isNotEmpty()) {
+            val done = downloadIds.filter { isDownloadComplete(context, it.value) }.keys
+            if (done.isNotEmpty()) completedDownloads = completedDownloads + done
+            delay(1000)
+        }
+    }
     LaunchedEffect(refresh) {
         loading = true
         error = null
@@ -206,17 +236,24 @@ class MainActivity: ComponentActivity(){
                     if(release != null){
                         Text(if(release.apkUrl != null) "📦 APK公開済み" else "📭 APKはありません")
                         if(release.notes.isNotBlank()) Text(release.notes.take(240),fontSize=12.sp,maxLines=6)
-                        Button(onClick={
-                            val url = release.apkUrl ?: release.url
-                            if(release.apkUrl != null && url.startsWith("https://github.com/")) {
-                                val fileName = if (app.name == "スケジュールメモ") "ScheduleMemoryApp-v1.0.0.apk" else "MobileMonitorApp-${release.version.removePrefix("v")}.apk"
-                                downloadApk(context, url, fileName)
-                            } else if(url.startsWith("https://github.com/")) context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                        }) { Text(if(release.apkUrl != null) "APKをダウンロード" else "Releaseを見る") }
+                        if (release.apkUrl != null && completedDownloads.contains(app.repository)) {
+                            Button(onClick={ downloadIds[app.repository]?.let { installDownloadedApk(context, it) } }) { Text("インストール") }
+                        } else {
+                            Button(onClick={
+                                val url = release.apkUrl ?: release.url
+                                if(release.apkUrl != null && url.startsWith("https://github.com/")) {
+                                    val fileName = if (app.name == "スケジュールメモ") "ScheduleMemoryApp-v1.0.0.apk" else "MobileMonitorApp-${release.version.removePrefix("v")}.apk"
+                                    val id = downloadApk(context, url, fileName)
+                                    downloadIds = downloadIds + (app.repository to id)
+                                } else if(url.startsWith("https://github.com/")) context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                            }, enabled = !downloadIds.containsKey(app.repository)) {
+                                Text(if(downloadIds.containsKey(app.repository)) "ダウンロード中…" else if(release.apkUrl != null) "APKをダウンロード" else "Releaseを見る")
+                            }
+                        }
                     }
                 }
             }
         }
-        Text("APKはAndroidのDownloadManagerでDownloadsへ保存します。完了通知からAndroid標準のインストール確認へ進んでください。",fontSize=12.sp,color=Color.Gray)
+        Text("APKはアプリ内でダウンロード状態を確認し、完了後に「インストール」からAndroid標準の確認画面へ進めます。",fontSize=12.sp,color=Color.Gray)
     }
 }
