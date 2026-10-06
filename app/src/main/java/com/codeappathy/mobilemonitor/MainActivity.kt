@@ -131,7 +131,7 @@ class MainActivity: ComponentActivity(){
     Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement=Arrangement.spacedBy(12.dp)){
         Card(colors=CardDefaults.cardColors(containerColor=Color(0xFFFFF3C4))){ Column(Modifier.padding(16.dp)){ Text("みんなの進みぐあい",fontWeight=FontWeight.Bold); Text("${(avg*100).toInt()}%",fontSize=34.sp,fontWeight=FontWeight.Bold); LinearProgressIndicator(progress={avg},Modifier.fillMaxWidth()) } }
         projects.forEach { p -> ProjectCard(p){open(p)} }
-        Text("1.1.1ではストア基盤を追加。開発モニターのデータはまだサンプルで、次段階でGitHub/.apphub同期へ進みます。",fontSize=12.sp,color=Color.Gray)
+        Text("ストア基盤を追加済み。開発モニターのデータはまだサンプルで、次段階でGitHub/.apphub同期へ進みます。",fontSize=12.sp,color=Color.Gray)
     }
 }
 
@@ -182,7 +182,7 @@ class MainActivity: ComponentActivity(){
             Column(Modifier.padding(16.dp)){
                 Text("🏪 わたしのアプリ",fontSize=24.sp,fontWeight=FontWeight.Bold)
                 Text("GitHub Releaseから最新版を確認できるよ！")
-                Text("MobileMonitorApp 1.1.9",fontSize=12.sp,color=Color.Gray)
+                Text("MobileMonitorApp ${BuildConfig.VERSION_NAME}",fontSize=12.sp,color=Color.Gray)
                 Button(onClick={refresh++},enabled=!loading){ Text(if(loading) "確認中…" else "🔄 最新情報を確認") }
             }
         }
