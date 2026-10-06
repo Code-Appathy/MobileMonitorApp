@@ -1,9 +1,11 @@
-# AppHub shared project schema v1
-Each monitored PC repository should eventually contain `.apphub/project.json` and `.apphub/GUIDE.md`.
+# AppHub v1 common contract
 
-`project.json` is machine-readable. Core concepts: project, status, milestones, tasks, features, relations, updatedAt.
-Statuses: `planned`, `in_progress`, `completed`, `blocked`.
-Relations: `depends_on`, `provides_to`, `manages`, `shares_data_with`, `planned_integration`.
-Progress is calculated from milestone/task completion rather than entered as an arbitrary percentage.
+`.apphub` separates semantic project knowledge from GitHub's objective development facts.
 
-`GUIDE.md` is the friendly explanation source. It should explain purpose, features, connections and future work in short, simple Japanese suitable for a child to understand. Feature IDs in JSON may point to guide sections.
+Files: `project.json`, `ontology.json`, `features.json`, `milestones.json`, `relations.json`, `decisions.json`, `changelog.json`, `visualization.json`, `GUIDE.md`.
+
+GitHub provides commits, changed files, issues/PRs and Actions results. Codex updates semantic metadata only when the code/design change affects it. Android renders both developer and child-friendly views from the same data.
+
+Ontology changes are first-class events. Increment `ontologyVersion`, preserve a history entry, state the reason, and update affected features/relations/visualization semantics.
+
+Progress must be deterministic. Default milestone weights: planning 10, design 15, foundation 20, features 30, testing 15, production 10.

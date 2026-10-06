@@ -1,0 +1,1 @@
+{"schemaVersion":1,"changes":[{"version":"0.2.0","type":"architecture","summary":"AppHub v1 metadata split and pop encyclopedia direction adopted"},{"version":"0.2.0","type":"build","summary":"Java and Kotlin JVM targets unified on 17"}]}

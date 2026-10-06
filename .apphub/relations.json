@@ -1,0 +1,1 @@
+{"schemaVersion":1,"relations":[{"from":"mobile-monitor-app","to":"pc-projects","type":"reads_status_from","friendly":"PCアプリのみんなの様子を集める"},{"from":"mobile-monitor-app","to":"github","type":"reads_facts_from","friendly":"GitHubから開発の事実を集める"}]}

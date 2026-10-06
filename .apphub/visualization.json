@@ -1,0 +1,1 @@
+{"schemaVersion":1,"style":{"tone":"pop-friendly","audience":["developer","child-friendly"]},"views":[{"id":"ecosystem","title":"みんなの地図","nodes":"projects","edges":"relations"},{"id":"feature-flow","title":"できることの流れ","nodes":"features","edges":"semantic"},{"id":"ontology-evolution","title":"考え方の変化","nodes":"ontology.history","edges":"version"}]}

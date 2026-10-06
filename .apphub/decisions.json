@@ -1,0 +1,1 @@
+{"schemaVersion":1,"decisions":[{"id":"ADR-001","title":"GitHubの事実と.apphubの意味情報を分離","status":"accepted","reason":"進捗の自己申告を減らし、Codexは意味・設計変更の記録に集中する"},{"id":"ADR-002","title":"図をデータから自動生成","status":"accepted","reason":"機能やオントロジー変更をポップな図へ自動反映する"}]}

@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "ontologyVersion": 1,
+  "entities": ["Workspace", "Project", "Application", "Repository", "Module", "Feature", "Milestone", "Task", "Status", "Update", "Decision", "Relation"],
+  "relations": ["contains", "implements", "depends_on", "provides_to", "manages", "shares_data_with", "planned_integration"],
+  "history": [{"version": 1, "change": "AppHub v1 ontology introduced", "reason": "Track development meaning as well as GitHub facts"}]
+}

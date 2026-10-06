@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "features": [
+    {"id":"progress","name":"進みぐあい","status":"in_progress","friendly":"みんながどこまでできたか見る"},
+    {"id":"map","name":"みんなの地図","status":"in_progress","friendly":"アプリ同士のつながりを見る"},
+    {"id":"encyclopedia","name":"アプリ図鑑","status":"in_progress","friendly":"むずかしい内容をやさしく読む"},
+    {"id":"github-sync","name":"GitHub自動同期","status":"planned","friendly":"パソコンの最新情報を自動で集める"},
+    {"id":"ontology-history","name":"オントロジー履歴","status":"planned","friendly":"考え方がどう変わったかを見る"}
+  ]
+}
