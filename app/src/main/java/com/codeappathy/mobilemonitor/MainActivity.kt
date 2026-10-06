@@ -3,6 +3,10 @@ package com.codeappathy.mobilemonitor
 import android.os.Bundle
 import android.content.Intent
 import android.net.Uri
+import android.app.DownloadManager
+import android.content.Context
+import android.os.Environment
+import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,7 +38,7 @@ private val storeApps = listOf(
     StoreApp("スケジュールメモ","📅","予定をカレンダーと一覧で管理する","1.0.0","Code-Appathy/ScheduleMemoryApp","配布APK v1.0.0","https://github.com/Code-Appathy/MobileMonitorApp/releases/download/v1.1.7/ScheduleMemoryApp-v1.0.0.apk")
 )
 
-data class PublishedRelease(val version: String, val url: String, val apkUrl: String?, val notes: String)
+data class PublishedRelease(val version: String, val url: String, val apkUrl: String?, val notes: String)\n\nprivate fun downloadApk(context: Context, url: String, fileName: String) {\n    val request = DownloadManager.Request(Uri.parse(url))\n        .setTitle(fileName)\n        .setDescription("APKをダウンロードしています")\n        .setMimeType("application/vnd.android.package-archive")\n        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)\n        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)\n        .setAllowedOverMetered(true)\n        .setAllowedOverRoaming(true)\n    val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager\n    manager.enqueue(request)\n    Toast.makeText(context, "ダウンロードを開始しました。完了通知からAPKを開いてください。", Toast.LENGTH_LONG).show()\n}
 
 private fun fetchRelease(repository: String): PublishedRelease? {
     val connection = URL("https://api.github.com/repos/$repository/releases/latest").openConnection() as HttpURLConnection
@@ -164,7 +168,7 @@ class MainActivity: ComponentActivity(){
             Column(Modifier.padding(16.dp)){
                 Text("🏪 わたしのアプリ",fontSize=24.sp,fontWeight=FontWeight.Bold)
                 Text("GitHub Releaseから最新版を確認できるよ！")
-                Text("MobileMonitorApp 1.1.8",fontSize=12.sp,color=Color.Gray)
+                Text("MobileMonitorApp 1.1.9",fontSize=12.sp,color=Color.Gray)
                 Button(onClick={refresh++},enabled=!loading){ Text(if(loading) "確認中…" else "🔄 最新情報を確認") }
             }
         }
@@ -190,12 +194,12 @@ class MainActivity: ComponentActivity(){
                         if(release.notes.isNotBlank()) Text(release.notes.take(240),fontSize=12.sp,maxLines=6)
                         Button(onClick={
                             val url = release.apkUrl ?: release.url
-                            if(url.startsWith("https://github.com/")) context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                            if(release.apkUrl != null && url.startsWith("https://github.com/")) {\n                                val fileName = if (app.name == "スケジュールメモ") "ScheduleMemoryApp-v1.0.0.apk" else "MobileMonitorApp-\${release.version.removePrefix("v")}.apk"\n                                downloadApk(context, url, fileName)\n                            } else if(url.startsWith("https://github.com/")) context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                         }) { Text(if(release.apkUrl != null) "APKをダウンロード" else "Releaseを見る") }
                     }
                 }
             }
         }
-        Text("公開Releaseのみ取得します。インストール済みかどうかは判定していません。APKのインストールはAndroidの確認画面から行ってください。",fontSize=12.sp,color=Color.Gray)
+        Text("APKはAndroidのDownloadManagerでDownloadsへ保存します。完了通知からAndroid標準のインストール確認へ進んでください。",fontSize=12.sp,color=Color.Gray)
     }
 }
