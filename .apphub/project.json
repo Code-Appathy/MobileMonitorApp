@@ -5,11 +5,11 @@
     "name": "MobileMonitorApp",
     "type": "android",
     "description": "PCアプリ群の進捗・関係・機能をスマホで見える化するアプリ",
-    "version": "1.1.2"
+    "version": "1.1.7"
   },
   "status": {
     "phase": "implementation",
-    "summary": "1.1.2 固定署名付きRelease配布基盤を追加"
+    "summary": "1.1.7 マイアプリにScheduleMemoryApp v1.0.0を登録"
   },
   "features": [
     {
