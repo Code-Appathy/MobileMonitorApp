@@ -9,7 +9,7 @@ on:
       version:
         description: 'Release version, e.g. 1.1.2'
         required: true
-        default: '1.1.4'
+        default: '1.2.0'
 
 permissions:
   contents: write
@@ -71,10 +71,14 @@ jobs:
           test -x "$BUILD_TOOLS/aapt"
           "$BUILD_TOOLS/apksigner" verify --verbose --print-certs "$APK"
           BADGING="$("$BUILD_TOOLS/aapt" dump badging "$APK")"
-          echo "$BADGING" | head -1
-          echo "$BADGING" | grep -F "package: name='com.codeappathy.mobilemonitor'"
-          echo "$BADGING" | grep -F "versionCode='10104'"
-          echo "$BADGING" | grep -F "versionName='1.1.4'"
+          PACKAGE_LINE="$(printf '%s\n' "$BADGING" | grep -m1 '^package:')"
+          echo "$PACKAGE_LINE"
+          VERSION="${{ steps.version.outputs.version }}"
+          VERSION_CODE="$(sed -nE 's/^[[:space:]]*versionCode = ([0-9]+).*$/\1/p' app/build.gradle.kts)"
+          test -n "$VERSION_CODE"
+          [[ "$PACKAGE_LINE" == *"name='com.codeappathy.mobilemonitor'"* ]]
+          [[ "$PACKAGE_LINE" == *"versionCode='$VERSION_CODE'"* ]]
+          [[ "$PACKAGE_LINE" == *"versionName='$VERSION'"* ]]
           echo "Signed APK signature and package metadata verified."
 
       - name: Prepare release files and checksum
