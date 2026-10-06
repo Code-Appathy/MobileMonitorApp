@@ -19,6 +19,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -166,7 +168,7 @@ class MainActivity: ComponentActivity(){
 
 @Composable fun EncyclopediaScreen(open:(Project)->Unit){ Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){Text("アプリ図鑑",fontSize=22.sp,fontWeight=FontWeight.Bold);Text("むずかしい言葉を使わずに、何をするアプリなのか見てみよう。",color=Color.Gray);projects.forEach{p->Card(Modifier.fillMaxWidth().clickable{open(p)},colors=CardDefaults.cardColors(containerColor=Color(0xFFE3F2FD))){Row(Modifier.padding(16.dp),verticalAlignment=Alignment.CenterVertically){Text(p.emoji,fontSize=38.sp);Spacer(Modifier.width(12.dp));Column{Text(p.name,fontWeight=FontWeight.Bold);Text(p.purpose);Text("やさしく見る →",color=Color(0xFF6750A4),fontSize=12.sp)}}}} } }
 
-@Composable fun ProjectDetail(p:Project,back:()->Unit){ Column(Modifier.verticalScroll(rememberScrollState()).padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){ Text("← もどる",Modifier.clickable{back()},color=Color(0xFF6750A4));Text("${p.emoji} ${p.name}",fontSize=28.sp,fontWeight=FontWeight.Bold);Card(colors=CardDefaults.cardColors(containerColor=Color(0xFFFFF3C4))){Column(Modifier.padding(16.dp)){Text("これはなに？",fontWeight=FontWeight.Bold);Text("${p.name}は、${p.purpose}ためのアプリです。パソコンでしている仕事を、もっと分かりやすく便利にする仲間です。")}};Text("できること",fontWeight=FontWeight.Bold);p.features.forEach{Text("✅ $it")};Text("これから",fontWeight=FontWeight.Bold);p.next.forEach{Text("🌱 $it")};Text("開発の進みぐあい ${(p.progress*100).toInt()}%",fontWeight=FontWeight.Bold);LinearProgressIndicator(progress={p.progress},Modifier.fillMaxWidth());Text("技術情報",fontWeight=FontWeight.Bold);Text("GitHub: Code-Appathy/${p.name}\\n共有規格: .apphub/project.json + GUIDE.md",fontSize=13.sp,color=Color.Gray) } }
+@Composable fun ProjectDetail(p:Project,back:()->Unit){ Column(Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).padding(horizontal=18.dp, vertical=12.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){ Text("← もどる",Modifier.clickable{back()}.padding(vertical=8.dp),color=Color(0xFF6750A4));Text("${p.emoji} ${p.name}",fontSize=28.sp,fontWeight=FontWeight.Bold);Card(colors=CardDefaults.cardColors(containerColor=Color(0xFFFFF3C4))){Column(Modifier.padding(16.dp)){Text("これはなに？",fontWeight=FontWeight.Bold);Text("${p.name}は、${p.purpose}ためのアプリです。パソコンでしている仕事を、もっと分かりやすく便利にする仲間です。")}};Text("できること",fontWeight=FontWeight.Bold);p.features.forEach{Text("✅ $it")};Text("これから",fontWeight=FontWeight.Bold);p.next.forEach{Text("🌱 $it")};Text("開発の進みぐあい ${(p.progress*100).toInt()}%",fontWeight=FontWeight.Bold);LinearProgressIndicator(progress={p.progress},Modifier.fillMaxWidth());Text("技術情報",fontWeight=FontWeight.Bold);Text("GitHub: Code-Appathy/${p.name}\\n共有規格: .apphub/project.json + GUIDE.md",fontSize=13.sp,color=Color.Gray) } }
 
 
 @Composable fun StoreScreen(){
